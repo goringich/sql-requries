@@ -1,6 +1,18 @@
-
-
 # COOP Branch Database
+
+## Project Overview
+
+This project implements a **PostgreSQL** relational database for **COOP branches**, their consumers, products, and purchases. The database supports complex analytical queries using **SQL** features such as:
+
+- Aggregate functions  
+- `JOIN` operations  
+- `EXISTS` and `NOT EXISTS`  
+- `ALL` and `ANY` operators  
+- `UNION`  
+
+The database is optimized for managing and analyzing branch commissions, consumer purchases, and product inventory.
+
+---
 
 ## Database Schema
 
@@ -53,10 +65,33 @@
 
 ---
 
+## Setup Instructions
+
+1. **Database Setup**  
+   Ensure **PostgreSQL** is installed and a database is created:
+   ```sql
+   CREATE DATABASE coop_branch_db;
+   ```
+
+2. **Run Script**  
+   Execute the SQL script provided in order, ensuring proper table creation and data insertion.
+
+3. **Validate Tables**  
+   Verify the structure and inserted data:
+   ```sql
+   SELECT * FROM "ОТДЕЛЕНИЕ__КООП";
+   SELECT * FROM "ПОТРЕБИТЕЛЬ";
+   SELECT * FROM "ТОВАР";
+   SELECT * FROM "ЗАКУПКИ";
+   ```
+
+---
+
 ## Key SQL Queries
 
-### Example Query: COOP Branches with High Commissions
+### Example 1: COOP Branches with High Commissions
 
+**Find COOP branches that sold goods to all consumers from "Заволжье" and have commissions above average**:
 ```sql
 SELECT О."ИДЕНТИФИКАТОР", О."ФАМИЛИЯ_ЗАВЕДУЮЩЕГО", О."КОМИССИОННЫЕ"
 FROM "ОТДЕЛЕНИЕ__КООП" О
@@ -77,15 +112,44 @@ AND О."КОМИССИОННЫЕ" > (SELECT AVG("КОМИССИОННЫЕ") FROM
 
 ---
 
-## Instructions for Use
+### Example 2: Products Ordered by Consumers with Minimal Credit
 
-1. Run the SQL script in a **PostgreSQL** environment.
-2. Use table queries for validation:
-    ```sql
-    SELECT * FROM "ОТДЕЛЕНИЕ__КООП";
-    SELECT * FROM "ПОТРЕБИТЕЛЬ";
-    SELECT * FROM "ТОВАР";
-    SELECT * FROM "ЗАКУПКИ";
-    ```
+**Count the number of distinct products ordered by consumers with the lowest credit**:
+```sql
+SELECT COUNT(DISTINCT З."ТОВАР") AS "Количество_товаров"
+FROM "ЗАКУПКИ" З
+JOIN "ПОТРЕБИТЕЛЬ" П ON З."ПОТРЕБИТЕЛЬ" = П."ИДЕНТИФИКАТОР"
+WHERE П."КРЕДИТ" = (SELECT MIN("КРЕДИТ") FROM "ПОТРЕБИТЕЛЬ");
+```
 
-3. Verify the structure and data integrity using `SELECT` queries provided.
+---
+
+## Testing and Debugging
+
+To verify data correctness:
+
+1. **Check Table Contents**  
+   Run simple `SELECT` queries:
+   ```sql
+   SELECT * FROM "ОТДЕЛЕНИЕ__КООП";
+   SELECT * FROM "ПОТРЕБИТЕЛЬ";
+   SELECT * FROM "ТОВАР";
+   SELECT * FROM "ЗАКУПКИ";
+   ```
+
+2. **Run Analytical Queries**  
+   Execute provided SQL queries for testing aggregated results, conditions, and constraints.
+
+3. **Check for Consistency**  
+   - Ensure foreign key relationships between tables are intact.  
+   - Validate calculated values, such as commissions and total purchase amounts.
+
+---
+
+## Tools Used
+
+- **Database:** PostgreSQL  
+- **Editor:** VS Code, SQL client tools (pgAdmin, DBeaver, or psql CLI)  
+
+---
+
